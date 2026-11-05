@@ -18,6 +18,21 @@ npm run build
 npm run preview
 ```
 
+## GitHub Pages
+
+The workflow in `.github/workflows/pages.yml` runs unit tests, builds the site with Node.js 24, and deploys it on pushes to `main`. It can also be started manually from the Actions tab.
+
+In the repository's **Settings → Pages → Build and deployment**, set **Source** to **GitHub Actions**. Then push the workflow to `main` or run **Deploy to GitHub Pages** from the Actions tab. The deployment job reports the published URL; for this repository the default address is `https://armemius.github.io/RSVPDisplay/`.
+
+The build takes its base path from GitHub Pages metadata, supporting repository paths and custom domains. Local development uses `/`. To preview a repository-path build locally:
+
+```sh
+PAGES_BASE_PATH=/RSVPDisplay/ npm run build
+npm run preview -- --base=/RSVPDisplay/
+```
+
+Open `http://localhost:4173/RSVPDisplay/`.
+
 ## Import a document
 
 Choose or drag in one UTF-8 `.rsvp` file, up to 10 MB. The page opens directly to a dropzone, then shows a plain text viewer with a chapter selector. Use the upload and close icons in the header to replace or remove the document. You can also drop a replacement file onto the viewer. An editable [sample template](public/example.rsvp) is included in the repository.
