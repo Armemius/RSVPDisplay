@@ -4,17 +4,17 @@ const raw = '@rsvp 1\n@title My test read\n@source test.txt\n@author A Reader\n@
 
 test.beforeEach(async ({ page }) => { await page.goto('/') })
 
-test('imports a file, changes chapter and source views, and removes it', async ({ page }) => {
+test('opens the file picker, displays chapters, and removes the document', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
-  await page.getByLabel('Choose an RSVP file').setInputFiles({ name: 'test.rsvp', mimeType: 'text/plain', buffer: Buffer.from(raw) })
+  const chooser = page.waitForEvent('filechooser')
+  await page.getByRole('button', { name: 'Choose a file' }).click()
+  await (await chooser).setFiles({ name: 'test.rsvp', mimeType: 'text/plain', buffer: Buffer.from(raw) })
   await expect(page.getByRole('heading', { name: 'My test read' })).toBeVisible()
   await expect(page.getByText('by A Reader')).toBeVisible()
   await expect(page.getByRole('article')).toContainText('Hello world.')
-  await page.getByRole('button', { name: '2. Second' }).click()
+  await page.getByRole('combobox', { name: 'Chapters' }).selectOption('1')
   await expect(page.getByRole('article')).toContainText('@Escaped text.')
-  await page.getByRole('tab', { name: 'File source' }).click()
-  await expect(page.locator('.raw-preview')).toHaveText(raw)
   await page.getByRole('button', { name: 'Remove document' }).click()
   await expect(page.getByRole('button', { name: 'Choose a file' })).toBeVisible()
   expect(errors).toEqual([])
@@ -26,43 +26,35 @@ test('reports invalid input, recovers, and retains a loaded file on failed repla
   await expect(page.getByRole('alert')).toContainText('must start with @rsvp 1')
   await input.setInputFiles({ name: 'good.rsvp', mimeType: 'text/plain', buffer: Buffer.from(raw) })
   await expect(page.getByRole('alert')).toHaveCount(0)
-  await input.setInputFiles({ name: 'wrong.pdf', mimeType: 'application/pdf', buffer: Buffer.from('wrong') })
+  const chooser = page.waitForEvent('filechooser')
+  await page.getByRole('button', { name: 'Replace file' }).click()
+  await (await chooser).setFiles({ name: 'wrong.pdf', mimeType: 'application/pdf', buffer: Buffer.from('wrong') })
   await expect(page.getByRole('alert')).toContainText('Choose a .rsvp file')
   await expect(page.getByRole('heading', { name: 'My test read' })).toBeVisible()
 })
 
-test('loads an example, downloads a template, and opens accessible help', async ({ page }) => {
-  const downloadPromise = page.waitForEvent('download')
-  await page.getByRole('link', { name: 'Download template' }).click()
-  expect((await downloadPromise).suggestedFilename()).toBe('example.rsvp')
-  await page.getByRole('button', { name: 'Try an example' }).click()
-  await expect(page.getByRole('heading', { name: 'The Art of Paying Attention' })).toBeVisible()
-  await page.getByRole('button', { name: 'How it works' }).click()
-  await expect(page.getByRole('dialog')).toBeVisible()
-  await page.keyboard.press('Escape')
-  await expect(page.getByRole('dialog')).toHaveCount(0)
-})
-
-test('accepts a dropped file and rejects multiple dropped files', async ({ page }) => {
+test('accepts dropped files in both empty and viewer states and rejects multiple files', async ({ page }) => {
   async function drop(contents: string[]) {
     const transfer = await page.evaluateHandle((texts) => {
       const data = new DataTransfer()
       texts.forEach((text, index) => data.items.add(new File([text], `file-${index}.rsvp`, { type: 'text/plain' })))
       return data
     }, contents)
-    await page.locator('.drop-zone').dispatchEvent('drop', { dataTransfer: transfer })
+    await page.getByRole('main').dispatchEvent('drop', { dataTransfer: transfer })
   }
   await drop([raw, raw])
   await expect(page.getByRole('alert')).toContainText('one .rsvp file at a time')
   await drop([raw])
   await expect(page.getByRole('heading', { name: 'My test read' })).toBeVisible()
+  await drop([raw.replace('My test read', 'Replacement read')])
+  await expect(page.getByRole('heading', { name: 'Replacement read' })).toBeVisible()
 })
 
 test('fits the viewport before and after import', async ({ page }, testInfo) => {
-  await expect(page.getByRole('heading', { name: /A little less noise/ })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Drop a .rsvp file' })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   await page.screenshot({ path: testInfo.outputPath('import-page.png'), fullPage: true })
-  await page.getByRole('button', { name: 'Try an example' }).click()
+  await page.getByLabel('Choose an RSVP file').setInputFiles('public/example.rsvp')
   await expect(page.getByRole('heading', { name: 'The Art of Paying Attention' })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   await page.screenshot({ path: testInfo.outputPath('document-preview.png'), fullPage: true })

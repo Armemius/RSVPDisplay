@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
+import { ImportError } from '../src/lib/import-error'
 import { MAX_FILE_SIZE, parseRsvp, readRsvpFile } from '../src/lib/rsvp'
 
 const header = '@rsvp 1\n@title A book\n@source book.txt\n'
@@ -37,27 +38,30 @@ describe('RSVP Nano v1 import', () => {
     expect(document.writingMode).toBe('vertical-rl')
   })
   it.each([
-    ['', 'must start'],
-    ['@rsvp 2\n@title A\n@source B\nHello', 'version 1'],
-    ['@rsvp 1\n@title \n@source B\nHello', '@title and @source'],
-    ['@rsvp 1\n@title A\nHello', '@title and @source'],
-    [header, 'no readable text'],
-    [header + '— !', 'no readable text'],
-    [header + '@direction backwards\nHello', 'Line 4'],
-    [header + '@language not_valid\nHello', 'Invalid @language'],
-    [header + '@chapter\nHello', '@chapter needs'],
-    [header + '@para extra\nHello', 'does not take a value'],
-    [header + '@unknown hello\nWorld', 'Unsupported directive'],
-    [header + 'Hello\n@author Author', 'in the header'],
-    [header + 'Hello\0', 'binary data'],
-  ])('rejects malformed input with an actionable error', (raw, message) => {
-    expect(() => parseRsvp(raw)).toThrow(message)
+    ['', 'version', undefined],
+    ['@rsvp 2\n@title A\n@source B\nHello', 'version', undefined],
+    ['@rsvp 1\n@title \n@source B\nHello', 'header', undefined],
+    ['@rsvp 1\n@title A\nHello', 'header', undefined],
+    [header, 'noText', undefined],
+    [header + '— !', 'noText', undefined],
+    [header + '@direction backwards\nHello', 'direction', 4],
+    [header + '@language not_valid\nHello', 'languageInvalid', 4],
+    [header + '@chapter\nHello', 'chapter', 4],
+    [header + '@para extra\nHello', 'paragraph', 4],
+    [header + '@unknown hello\nWorld', 'directive', 4],
+    [header + 'Hello\n@author Author', 'metadata', 5],
+    [header + 'Hello\0', 'binary', undefined],
+  ])('rejects malformed input with a structured error', (raw, code, line) => {
+    let error: unknown
+    try { parseRsvp(raw as string) } catch (cause) { error = cause }
+    expect(error).toBeInstanceOf(ImportError)
+    expect(error).toMatchObject({ code, line })
   })
   it('checks file extension, empty files, size, and UTF-8 decoding', async () => {
     await expect(readRsvpFile(new File([header + 'Hello'], 'BOOK.RSVP'))).resolves.toMatchObject({ document: { wordCount: 1 } })
-    await expect(readRsvpFile(new File(['text'], 'book.epub'))).rejects.toThrow('Choose a .rsvp')
-    await expect(readRsvpFile(new File([], 'book.rsvp'))).rejects.toThrow('empty')
-    await expect(readRsvpFile(new File([new Uint8Array(MAX_FILE_SIZE + 1)], 'book.rsvp'))).rejects.toThrow('too large')
-    await expect(readRsvpFile(new File([new Uint8Array([0xff, 0xfe])], 'book.rsvp'))).rejects.toThrow('UTF-8')
+    await expect(readRsvpFile(new File(['text'], 'book.epub'))).rejects.toMatchObject({ code: 'extension' })
+    await expect(readRsvpFile(new File([], 'book.rsvp'))).rejects.toMatchObject({ code: 'emptyFile' })
+    await expect(readRsvpFile(new File([new Uint8Array(MAX_FILE_SIZE + 1)], 'book.rsvp'))).rejects.toMatchObject({ code: 'tooLarge' })
+    await expect(readRsvpFile(new File([new Uint8Array([0xff, 0xfe])], 'book.rsvp'))).rejects.toMatchObject({ code: 'encoding' })
   })
 })

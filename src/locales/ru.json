@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "title": "RSVP Display",
+    "description": "Открывайте и читайте файлы .rsvp в браузере."
+  },
+  "language": {
+    "label": "Язык интерфейса"
+  },
+  "common": {
+    "close": "Закрыть",
+    "home": "RSVP Display — на главную"
+  },
+  "import": {
+    "label": "Импорт документа",
+    "inputLabel": "Выбрать файл RSVP",
+    "opening": "Открываем документ…",
+    "drop": "Перетащите файл .rsvp",
+    "choose": "Выбрать файл",
+    "fileSize": "До {{size, number}} МБ",
+    "loadingStatus": "Загрузка документа.",
+    "loadedStatus": "Документ «{{title}}» открыт. {{words}}.",
+    "emptyStatus": "Выберите файл, чтобы начать."
+  },
+  "document": {
+    "replace": "Заменить файл",
+    "remove": "Удалить документ",
+    "author": "Автор: {{author}}",
+    "words_one": "{{count, number}} слово",
+    "words_few": "{{count, number}} слова",
+    "words_many": "{{count, number}} слов",
+    "words_other": "{{count, number}} слова",
+    "chaptersLabel": "Главы",
+    "chapterLabel": "Текст главы",
+    "emptyChapter": "В этой главе нет текста."
+  },
+  "errors": {
+    "multipleFiles": "Выберите один файл .rsvp за раз.",
+    "openFile": "Не удалось открыть файл. Попробуйте ещё раз.",
+    "binary": "Файл содержит двоичные данные. Выберите текстовый файл .rsvp в кодировке UTF-8.",
+    "version": "Файл должен начинаться с @rsvp 1. Поддерживается только версия 1 формата RSVP Nano.",
+    "header": "Добавьте непустые @title и @source во вторую и третью строки.",
+    "metadata": "Директива @{{directive}} должна содержать одно непустое значение в заголовке.",
+    "chapter": "Укажите название после @chapter.",
+    "paragraph": "Директива @para не принимает значение.",
+    "languageMissing": "Укажите языковой тег BCP 47 после @language, например en или ru.",
+    "languageInvalid": "Некорректный тег @language. Используйте тег BCP 47, например en или ru.",
+    "direction": "Допустимые значения @direction: auto, ltr или rtl.",
+    "writingMode": "Поддерживается только @writing-mode vertical-rl.",
+    "directive": "Неподдерживаемая директива @{{directive}}. Чтобы отобразить строку, начинающуюся с @, добавьте ещё один знак: @@.",
+    "noText": "В файле нет текста для чтения. Добавьте текст после заголовка.",
+    "extension": "Выберите файл .rsvp. Другие форматы документов пока не поддерживаются.",
+    "tooLarge": "Файл слишком большой. Выберите файл размером меньше 10 МБ.",
+    "emptyFile": "Файл пуст. Выберите файл .rsvp с текстом.",
+    "encoding": "Не удалось прочитать файл как текст UTF-8. Проверьте кодировку и попробуйте ещё раз.",
+    "atLine": "Строка {{line, number}}: {{message}}"
+  }
+}

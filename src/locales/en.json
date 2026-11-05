@@ -1,0 +1,55 @@
+{
+  "meta": {
+    "title": "RSVP Display",
+    "description": "Open and read .rsvp files in your browser."
+  },
+  "language": {
+    "label": "Interface language"
+  },
+  "common": {
+    "close": "Close",
+    "home": "RSVP Display home"
+  },
+  "import": {
+    "label": "Document import",
+    "inputLabel": "Choose an RSVP file",
+    "opening": "Opening your document…",
+    "drop": "Drop a .rsvp file",
+    "choose": "Choose a file",
+    "fileSize": "Up to {{size, number}} MB",
+    "loadingStatus": "Loading document.",
+    "loadedStatus": "{{title}} imported. {{words}}.",
+    "emptyStatus": "Choose a file to begin."
+  },
+  "document": {
+    "replace": "Replace file",
+    "remove": "Remove document",
+    "author": "by {{author}}",
+    "words_one": "{{count, number}} word",
+    "words_other": "{{count, number}} words",
+    "chaptersLabel": "Chapters",
+    "chapterLabel": "Chapter text",
+    "emptyChapter": "This chapter has no text."
+  },
+  "errors": {
+    "multipleFiles": "Choose one .rsvp file at a time.",
+    "openFile": "Could not open this file. Please try again.",
+    "binary": "This file contains binary data. Choose a UTF-8 .rsvp file.",
+    "version": "The file must start with @rsvp 1. Only RSVP Nano version 1 is supported.",
+    "header": "Add a non-empty @title and @source on the second and third lines.",
+    "metadata": "@{{directive}} needs one non-empty value in the header.",
+    "chapter": "@chapter needs a title.",
+    "paragraph": "@para does not take a value.",
+    "languageMissing": "@language needs a BCP 47 language tag, such as en or ru.",
+    "languageInvalid": "Invalid @language tag. Use a BCP 47 tag, such as en or ru.",
+    "direction": "@direction must be auto, ltr, or rtl.",
+    "writingMode": "Only @writing-mode vertical-rl is supported.",
+    "directive": "Unsupported directive @{{directive}}. To display a line starting with @, escape it as @@.",
+    "noText": "This file has no readable text. Add content after the header.",
+    "extension": "Choose a .rsvp file. Other document formats are not supported yet.",
+    "tooLarge": "This file is too large. Choose a file smaller than 10 MB.",
+    "emptyFile": "This file is empty. Choose a .rsvp file with some text.",
+    "encoding": "Could not read this file as UTF-8 text. Check its encoding and try again.",
+    "atLine": "Line {{line, number}}: {{message}}"
+  }
+}
