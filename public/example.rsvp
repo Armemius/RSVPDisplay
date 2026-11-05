@@ -1,0 +1,19 @@
+@rsvp 1
+@title The Art of Paying Attention
+@source example.txt
+@author RSVP Display
+@language en
+@chapter A quieter kind of reading
+There is a particular pleasure in giving one thing your full attention. A sentence. A paragraph.
+An idea you might otherwise have passed by.
+@para
+Reading can be a small pause in a busy day. You do not need to finish a chapter or reach a goal.
+Sometimes it is enough to find a few words that stay with you.
+@chapter One word at a time
+Rapid Serial Visual Presentation shows a passage one word at a time, keeping your eyes in one
+place while the text moves forward. Your pace sets the rhythm.
+@para
+This is a sample document for RSVP Display. Import your own .rsvp file to preview its chapters,
+metadata, and text. Word-by-word playback will come in a future update.
+@para
+@@This line starts with an escaped at sign. It is readable text, not a directive.
